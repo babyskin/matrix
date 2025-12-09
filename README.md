@@ -2,6 +2,10 @@
 
 A complete self-hosted Matrix server with WhatsApp, Telegram, Discord, and Signal bridges.
 
+<p align="center">
+  <img width="1000" src="https://github.com/user-attachments/assets/24e7af4f-e521-48ca-b9fd-a2e9c65b1ac8" alt="neo-lego"/>
+</p>
+
 ## Prerequisites
 
 - Docker & Docker Compose
