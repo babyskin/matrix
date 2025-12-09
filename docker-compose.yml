@@ -1,0 +1,80 @@
+services:
+  synapse:
+    image: docker.io/matrixdotorg/synapse:latest
+    restart: unless-stopped
+    volumes:
+      - ./synapse-data:/data
+    depends_on:
+      - db
+    ports:
+      - '127.0.0.1:8008:8008/tcp'
+  
+  db:
+    image: docker.io/postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: synapse_user
+      POSTGRES_PASSWORD: your_secure_password
+      POSTGRES_DB: postgres
+      POSTGRES_INITDB_ARGS: "--encoding='UTF8' --lc-collate='C' --lc-ctype='C'"
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+
+  mautrix-whatsapp:
+    image: dock.mau.dev/mautrix/whatsapp:latest
+    container_name: mautrix-whatsapp
+    restart: unless-stopped
+    depends_on:
+      - db
+      - synapse
+    volumes:
+      - ./mautrix-whatsapp:/data
+
+  mautrix-telegram:
+    image: dock.mau.dev/mautrix/telegram:latest
+    container_name: mautrix-telegram
+    restart: unless-stopped
+    depends_on:
+      - db
+      - synapse
+    volumes:
+      - ./mautrix-telegram:/data
+    ports:
+      - 29317:29317
+
+  mautrix-discord:
+    image: dock.mau.dev/mautrix/discord:latest
+    container_name: mautrix-discord
+    restart: unless-stopped
+    depends_on:
+      - db
+      - synapse
+    volumes:
+      - ./mautrix-discord:/data
+    ports:
+      - 29334:29334
+
+  mautrix-signal:
+    image: dock.mau.dev/mautrix/signal:latest
+    container_name: mautrix-signal
+    restart: unless-stopped
+    depends_on:
+      - db
+      - synapse
+      - signald
+    volumes:
+      - ./mautrix-signal:/data
+    ports:
+      - 29328:29328
+
+  signald:
+    image: docker.io/signald/signald:latest
+    container_name: signald
+    restart: unless-stopped
+    volumes:
+      - ./signald:/signald
+
+networks:
+  default:
+    name: mautrix
+    external: true
